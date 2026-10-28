@@ -1,0 +1,79 @@
+name: Publish
+
+# Synced to .github/workflows/publish.yaml of each VS Code extension repository
+# by the VS Code extensions release workflow of isovalent/hubble-timescape. Edit
+# it there: changes made in an extension repository are overwritten by the next
+# release.
+#
+# Publishing a release of the extension repository, once its draft has been
+# reviewed, publishes the .vsix attached to it to the VS Code Marketplace and to
+# Open VSX. Pre-releases are not published there: the Marketplace does not
+# accept pre-release version numbers, and the release workflow also marks as
+# pre-releases the test releases that must not reach the registries.
+#
+# Each registry is skipped while its token is not set: VSCE_PAT, an Azure DevOps
+# token with Marketplace manage scope for the isovalent publisher, and OVSX_PAT,
+# an Open VSX token for the isovalent namespace.
+
+on:
+  release:
+    types:
+      - published
+
+permissions: {}
+
+env:
+  # renovate: datasource=npm depName=@vscode/vsce
+  VSCE_VERSION: 4.0.0
+  # renovate: datasource=npm depName=ovsx
+  OVSX_VERSION: 1.3.0
+
+jobs:
+  publish:
+    name: Publish to the registries
+    if: ${{ !github.event.release.prerelease && !contains(github.event.release.tag_name, '-') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    steps:
+      - name: Install node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          # renovate: datasource=node-version depName=node
+          node-version: '24.22.0'
+
+      # Publishes the package attached to the reviewed release, so the
+      # registries get the file that was checked there.
+      - name: Download package
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          gh release download "${TAG}" --repo "${GITHUB_REPOSITORY}" --pattern '*.vsix'
+          packages=(./*.vsix)
+          if [[ ${#packages[@]} -ne 1 || "${packages[0]}" != *"-${TAG#v}.vsix" ]]; then
+            echo "::error::Release ${TAG} must have exactly one .vsix of version ${TAG#v}, found: ${packages[*]}"
+            exit 1
+          fi
+          echo "VSIX=${packages[0]}" >> "$GITHUB_ENV"
+
+      - name: Publish to the VS Code Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          if [[ -z "${VSCE_PAT}" ]]; then
+            echo "::warning::VSCE_PAT is not set, skipping the VS Code Marketplace"
+            exit 0
+          fi
+          npx --yes "@vscode/vsce@${VSCE_VERSION}" publish --skip-duplicate --packagePath "${VSIX}"
+
+      - name: Publish to Open VSX
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          if [[ -z "${OVSX_PAT}" ]]; then
+            echo "::warning::OVSX_PAT is not set, skipping Open VSX"
+            exit 0
+          fi
+          npx --yes "ovsx@${OVSX_VERSION}" publish --skip-duplicate "${VSIX}"
