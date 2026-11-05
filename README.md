@@ -1,14 +1,18 @@
 # Network Policy Visualizer
 
-Visualize Cilium, Isovalent and Kubernetes network policies side by side with
-their YAML in VS Code, using the PolicyMap from Isovalent Hubble Timescape.
+See what a Cilium, Isovalent or Kubernetes network policy allows and denies as
+you write it. The extension draws the policy as an interactive map next to its
+YAML in VS Code, and can show the traffic the policy applies to in your
+clusters.
+
+![A CiliumNetworkPolicy open in the editor, with its map in the Policy Visualizer panel](images/screenshot.png)
 
 ## Features
 
-- **Side-by-side visualization**: Opens a panel next to your YAML editor showing the PolicyMap
-- **Live updates**: The visualization updates as you edit the YAML
+- **Side-by-side visualization**: Opens a panel next to your YAML editor showing the policy map
+- **Live updates**: The map updates as you edit the YAML
 - **Automatic detection**: Recognizes supported network policy YAML files by `apiVersion` and `kind`
-- **Timescape flows**: Optionally lists the flows Hubble Timescape recorded for the workloads the policy selects
+- **Real-time flow visibility**: Connect to Hubble Timescape to see the flows of the workloads the policy selects
 
 ## Supported Policy Types
 
@@ -36,32 +40,44 @@ The extension is published as `isovalent.vscode-npv-extension`:
   run `code --install-extension vscode-npv-extension-<version>.vsix`, or use
   **Extensions: Install from VSIX...** from the command palette.
 
-The extension is released together with Isovalent Hubble Timescape and shares
-its version numbers.
+Its versions follow the releases of Hubble Timescape.
 
 ## Usage
 
 1. Open a YAML file containing a supported network policy
 2. Click the graph icon in the editor title bar, or run **Visualize Network Policy** from the command palette
-3. The PolicyMap visualization opens in a side panel
+3. The policy map opens in a side panel
 
-### Timescape flows
+## Real-time flow visibility
 
-**Unlock real-time flow visibility**, at the top right of the panel, opens a
-short introduction to Timescape; **Unlock** then moves on to the connection
-form (once connected, the button reads **Timescape connected** and opens the
-form directly). The form takes the base URL of the Hubble Timescape public REST
-API plus an optional bearer token. Once connected, the flows recorded for the
-workloads the policy selects are listed below the map.
+The map shows what a policy allows on paper. Connected to Hubble Timescape, the
+extension also shows the traffic the policy actually applies to.
 
-The time range and refresh rate pickers in the flow panel's top bar default to
-the last hour, refreshed every 10s.
+Isovalent, the creators of Cilium, the eBPF-based networking, security and
+observability layer for Kubernetes, build its enterprise distribution, the
+[Isovalent Enterprise Platform](https://isovalent.com/products/kubernetes-networking/).
+Its Hubble component observes the network flows between your workloads, and
+Hubble Timescape, part of the platform, records them so they can be searched
+and analyzed, as they happen and long after.
 
-The URL is kept in the extension's global state; the token is kept in VS
-Code's [SecretStorage](https://code.visualstudio.com/api/references/vscode-api#SecretStorage),
+To connect the extension to Timescape:
+
+1. Click **Unlock real-time flow visibility** at the top right of the panel,
+   then **Unlock**.
+2. Enter the URL of your Timescape public REST API and, if it requires one, a
+   bearer token. Your Timescape administrator can provide both.
+3. The flows Timescape recorded for the workloads the policy selects are listed
+   below the map. They cover the last hour and refresh every 10 seconds; use
+   the time range and refresh rate pickers above the flows to change this.
+
+Once connected, the button reads **Timescape connected** and reopens the
+connection form.
+
+The token is kept in VS Code's
+[SecretStorage](https://code.visualstudio.com/api/references/vscode-api#SecretStorage),
 so it is neither written to plaintext extension state nor carried by settings
-sync. Requests are sent by the extension host, so the token is never exposed to
-the visualization panel.
+sync. Requests to Timescape are sent by the extension itself, never by the
+visualization panel, so the token is not exposed to it.
 
 ## Reporting Issues
 
