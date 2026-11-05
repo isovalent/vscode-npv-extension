@@ -5,7 +5,11 @@ you write it. The extension draws the policy as an interactive map next to its
 YAML in VS Code, and can show the traffic the policy applies to in your
 clusters.
 
-![A CiliumNetworkPolicy open in the editor, with its map in the Policy Visualizer panel](images/screenshot.png)
+<!-- Served from networkpolicy.io while isovalent/vscode-npv-extension, where the
+registries load relative images from, is private. Point it back at
+images/screenshot.png once that repository is public. -->
+
+![A CiliumNetworkPolicy open in the editor, with its map in the Policy Visualizer panel](https://networkpolicy.io/images/vscode-npv-extension-screenshot.png)
 
 ## Features
 

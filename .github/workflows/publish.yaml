@@ -8,12 +8,12 @@ name: Publish
 # Publishing a release of the extension repository, once its draft has been
 # reviewed, publishes the .vsix attached to it to the VS Code Marketplace and to
 # Open VSX. Pre-releases are not published there: the Marketplace does not
-# accept pre-release version numbers, and the release workflow also marks as
-# pre-releases the test releases that must not reach the registries.
+# accept pre-release version numbers.
 #
-# Each registry is skipped while its token is not set: VSCE_PAT, an Azure DevOps
-# token with Marketplace manage scope for the isovalent publisher, and OVSX_PAT,
-# an Open VSX token for the isovalent namespace.
+# The VS Code Marketplace authenticates this workflow as a trusted publisher of
+# the isovalent publisher, with the OIDC token of the run, so it needs no
+# secret. Open VSX is skipped while the VSCODE_OPEN_VSX_PUBLISH_TOKEN secret,
+# an Open VSX token for the isovalent namespace, is not set.
 
 on:
   release:
@@ -35,6 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      # Lets vsce authenticate as a trusted publisher of the Marketplace.
+      id-token: write
     timeout-minutes: 10
     steps:
       - name: Install node
@@ -59,21 +61,15 @@ jobs:
           echo "VSIX=${packages[0]}" >> "$GITHUB_ENV"
 
       - name: Publish to the VS Code Marketplace
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: |
-          if [[ -z "${VSCE_PAT}" ]]; then
-            echo "::warning::VSCE_PAT is not set, skipping the VS Code Marketplace"
-            exit 0
-          fi
-          npx --yes "@vscode/vsce@${VSCE_VERSION}" publish --skip-duplicate --packagePath "${VSIX}"
+        run: npx --yes "@vscode/vsce@${VSCE_VERSION}" publish --oidc --skip-duplicate --packagePath "${VSIX}"
 
       - name: Publish to Open VSX
         env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+          # ovsx reads its token from OVSX_PAT.
+          OVSX_PAT: ${{ secrets.VSCODE_OPEN_VSX_PUBLISH_TOKEN }}
         run: |
           if [[ -z "${OVSX_PAT}" ]]; then
-            echo "::warning::OVSX_PAT is not set, skipping Open VSX"
+            echo "::warning::VSCODE_OPEN_VSX_PUBLISH_TOKEN is not set, skipping Open VSX"
             exit 0
           fi
           npx --yes "ovsx@${OVSX_VERSION}" publish --skip-duplicate "${VSIX}"
