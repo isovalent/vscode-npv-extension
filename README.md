@@ -85,23 +85,17 @@ visualization panel, so the token is not exposed to it.
 
 ## Reporting Issues
 
-Open an issue in the
-[issue tracker](https://github.com/isovalent/vscode-npv-extension/issues) and
-include:
+Report bugs and suggest features in the
+[issue tracker](https://github.com/isovalent/vscode-npv-extension/issues).
+[CONTRIBUTING.md](CONTRIBUTING.md) lists what to include in a report.
 
-- the extension version, shown in the Extensions view;
-- the VS Code version, from **Help: About**;
-- a policy that reproduces the problem, with any sensitive names or addresses
-  removed;
-- any errors from **Developer: Open Webview Developer Tools**, if the panel
-  stays empty or shows an error.
-
-Report security vulnerabilities privately through your Isovalent support
-channel instead of opening a public issue.
+Do not report security vulnerabilities in a public issue. Report them
+privately as described in [SECURITY.md](SECURITY.md).
 
 ## License
 
-The extension is released under the MIT License, see `LICENSE`. The notices of
-the third-party software included in the extension are in
+The extension is proprietary software of Isovalent, Inc., a Cisco company, and
+its use is governed by the Cisco General Terms, see [LICENSE](LICENSE). The
+notices of the third-party software included in the extension are in
 `ThirdPartyNotices.txt`, which is shipped in the extension package and attached
 to each release.
