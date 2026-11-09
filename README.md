@@ -20,16 +20,14 @@ images/screenshot.png once that repository is public. -->
 
 ## Supported Policy Types
 
-| Kind                                | apiVersion               |
-| ----------------------------------- | ------------------------ |
-| `CiliumNetworkPolicy`               | `cilium.io/v2`           |
-| `CiliumClusterwideNetworkPolicy`    | `cilium.io/v2`           |
-| `NetworkPolicy`                     | `networking.k8s.io/v1`   |
-| `IsovalentNetworkPolicy`            | `isovalent.com/v1`       |
-| `IsovalentClusterwideNetworkPolicy` | `isovalent.com/v1`       |
-| `TetragonNetworkPolicy`             | `cilium.io/v1alpha1`     |
-| `TetragonNetworkPolicyNamespaced`   | `cilium.io/v1alpha1`     |
-| `SmartSwitchNetworkPolicy`          | `isovalent.com/v1alpha1` |
+| Kind                                | apiVersion                          |
+| ----------------------------------- | ----------------------------------- |
+| `CiliumNetworkPolicy`               | `cilium.io/v2`                      |
+| `CiliumClusterwideNetworkPolicy`    | `cilium.io/v2`                      |
+| `NetworkPolicy`                     | `networking.k8s.io/v1`              |
+| `ClusterNetworkPolicy`              | `policy.networking.k8s.io/v1alpha2` |
+| `IsovalentNetworkPolicy`            | `isovalent.com/v1`                  |
+| `IsovalentClusterwideNetworkPolicy` | `isovalent.com/v1`                  |
 
 ## Installation
 
